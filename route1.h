@@ -2,20 +2,28 @@
 #define STATIC_ROUTE
 
 #include<stdio.h>
-#include<iostream>
-
-#include<limit.h>
-#include<fstream>
 #include<string.h>
+#include<stdlib.h>
+#include<sys/socket.h>
+#include<linux/if_packet.h>
+#include<net/ethernet.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+#include<netinet/ip_icmp.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <stdbool.h>
 
-#include<netinet/ether.h>
-#include<net/if.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <assert.h>
 #define macaddr_len 18
 #define iface_len 16
 #define eth_len 2
 #define mac_tbl_len 2
 #define arp_tbl_len 2
-#define BUF_LEN 65535
+#define BUF_LEN 65536
 struct route_t
 {
     struct in_addr dest_addr;
@@ -30,13 +38,13 @@ struct route_t
 struct device_t // 记录mac地址
 {
     char interface[iface_len];
-    unsigned char hwaddr [macaddr_len]; // define ETH_ALEN 6 {AA : BB : CC : DD : EE :FF }
+    unsigned char hwaddr [ETH_ALEN]; // define ETH_ALEN 6 {AA : BB : CC : DD : EE :FF }
 };
 
 struct arp_t  // 记录主机ip地址和mac地址的对应关系
 {
     struct in_addr ip_addr;
-    unsigned char hwaddr[macaddr_len];
+    unsigned char hwaddr[ETH_ALEN];
 };
 
 
@@ -47,7 +55,7 @@ struct arp_t  // 记录主机ip地址和mac地址的对应关系
 
 
 // useless part
-
+/*
 struct ethhdr
 {
     unsigned char h_dest[ETH_ALEN]; //目的MAC地址
@@ -131,5 +139,5 @@ struct ifreq
 #define ifr_settings ifr_ifru.ifru_settings 
 
 
-#define eth_len 2
+#define eth_len 2*/
 #endif

@@ -8,7 +8,7 @@ void init_route_conf();
 struct route_t route_tbl[eth_len];
 struct device_t device_tbl[mac_tbl_len];
 struct arp_t arp_tbl[arp_tbl_len]
-char buffer[65535];
+char buffer[65536];
 int main()
 {
     init_route_conf();
@@ -37,7 +37,7 @@ int main()
             printf("The mac address has existed in the mactable! \n");
         else printf("we need to add the mac address to the table! \n");
 
-
+        
         //分析ip数据报头。遍历route_table
         struct iphdr *ip_head = (struct iphdr *)(buffer + sizeof(ethhdr));
         //struct in_addr _ip_addr;
@@ -46,7 +46,7 @@ int main()
         bool route_flag = false;
         for( index = 0; index < eth_len ; index++)
         {
-            if((ip_head->daddr & route_tbl[i].mask.saddr != route_tbl[i].dest_addr)
+            if((ip_head->daddr & route_tbl[i].mask.saddr) != route_tbl[i].dest_addr)
                 continue;
             else {
                 printf("We have found it in route talble, intdex : %d \n",&index);
@@ -113,6 +113,58 @@ int main()
 
 void init_route_conf()
 {
+    //arp init
+    const char *arp_ip1 = "192.168.2.2";
+    const char arp_hw1[ETH_ALEN] = {0x00,0x0c,0x29,0xca,0x14,0xb2};
+
+    const char *arp_ip2 = "192.168.1.1";
+    const char arp_hw2[ETH_ALEN] = {0x00,0x0c,0x29,0xdd,0x92,0xe4};
+
+    strcpy(arp_tbl[0].hwaddr,arp_hw1);
+    strcpy(arp_tbl[1].hwaddr,arp_hw2);
+
+    inet_aton(arp_ip1,arp_tbl[0].ip_addr);
+    inet_aton(arp_ip2,arp_tbl[1].ip_addr);
+
+
+    //device init
+    const char *dev_name1 = "eth0";
+    const char dev_mac1[ETH_ALEN] = {0x00,0x00,0x00,0x00,0x00,0x00};
+
+    const char *dev_name2 = "eth1";
+    const char dev_mac2[ETH_ALEN] = {0x00,0x00,0x00,0x00,0x00,0x00};
+
+    strcpy(device_tbl[0].interface,dev_name1);
+    strcpy(device_tbl[1].interface,dev_name2);
+    strcpy(device_tbl[0].hwaddr,dev_mac1);
+    strcpy(device_tbl[1].hwaddr,dev_mac2);
+
+
+
+    //route init
+    const char *route_dest1 = "192.168.1.0";
+    const char *route_dest2 = "192.168.2.0";
+
+    const char *gw1 = "0.0.0.0";
+    const char *gw2 = "0.0.0.0";
+
+    const char *mask1 = "255.255.255.0";
+    const char *mask2 = "255.255.255.0";
+
+    const char *name1 = "eth0";
+    const char *name2 = "eth1";
+
+    inet_aton(route_dest1,route_tbl[0].dest_addr);
+    inet_aton(route_dest2,route_tbl[1].dest_addr);
+
+    inet_aton(gw1,route_tbl[0].gateway);
+    inet_aton(gw2,route_tbl[1].gateway);
+
+    inet_aton(mask1,route_tbl[0].mask);
+    inet_aton(mask2,route_tbl[1].mask);
+
+    strcpy(route_tbl[0].interface,name1);
+    strcpy(route_tbl[1].interface,name2);
   /*  const char *eth0_addr1 = "192.168.2.0";   // unsure data
     inet_aton(eth0_addr1,inconf[0].ifru_addr);
     const char *eth0_addr2 = "0.0.0.0";    // unsure data;
